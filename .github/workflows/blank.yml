@@ -24,9 +24,11 @@ jobs:
 
     steps:
       - name: Download automate-git.py
+        shell: cmd
         run: curl -O https://raw.githubusercontent.com/emclient/cef/refs/heads/${{ inputs.branch }}/tools/automate/automate-git.py
 
       - name: Build CEF
+        shell: cmd
         run: |
           set GN_DEFINES=is_official_build=true 
           set GYP_MSVS_VERSION=2022
