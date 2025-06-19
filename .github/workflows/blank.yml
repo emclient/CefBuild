@@ -19,6 +19,8 @@ on:
 
 jobs:
   build:
+    timeout-minutes: 1440
+    
     runs-on:
       group: Metal
 
