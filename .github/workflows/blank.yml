@@ -29,8 +29,6 @@ jobs:
         shell: cmd
         run: curl -O https://raw.githubusercontent.com/emclient/cef/refs/heads/${{ inputs.branch }}/tools/automate/automate-git.py
 
-      - name: Clear 
-
       - name: Build CEF (win-x86)
         shell: cmd
         run: |
