@@ -25,6 +25,9 @@ on:
 jobs:
   build:
     timeout-minutes: 1440
+
+    permissions:
+      contents: write
     
     runs-on:
       group: Metal
@@ -42,8 +45,14 @@ jobs:
           set CEF_ARCHIVE_FORMAT=tar.bz2
           python automate-git.py --download-dir=${{ github.workspace }} --url=https://github.com/emclient/cef.git --branch=${{ inputs.branch }} --minimal-distrib --client-distrib ${{ inputs.clean && '--force-clean' || '--force-build' }} ${{ inputs.arch == 'x64' && '--x64-build' || '' }} --with-pgo-profiles
 
-      - name: Upload binaries
-        uses: actions/upload-artifact@v4
+      - name: Get CEF version
+        shell: bash
+        run: |
+          CEF_VERSION=$(ls -d chromium/src/cef/binary_distrib/cef_binary_*_windows${{ inputs.arch == 'x64' && '64' || '32' }} | sed -n "s/.*cef_binary_\(.*\)_windows.*/\1/p")
+          echo "CEF_VERSION=${CEF_VERSION}" >> $GITHUB_ENV
+
+      - name: Create release
+        uses: softprops/action-gh-release@v2
         with:
-          compression-level: 0
-          path: ${{ github.workspace }}/chromium/src/cef/binary_distrib/*.tar.bz2
+          tag_name: v${{ env.CEF_VERSION }}-${{ inputs.arch }}
+          files: ${{ github.workspace }}/chromium/src/cef/binary_distrib/*.tar.bz2 
