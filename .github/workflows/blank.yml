@@ -46,4 +46,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           compression-level: 0
-          path: ${{ github.workspace }}/cef/chromium/src/cef/binary_distrib/*.tar.bz2
+          path: ${{ github.workspace }}/chromium/src/cef/binary_distrib/*.tar.bz2
