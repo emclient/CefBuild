@@ -54,5 +54,5 @@ jobs:
       - name: Create release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v${{ env.CEF_VERSION }}-${{ inputs.arch }}
+          tag_name: v${{ env.CEF_VERSION }}
           files: ${{ github.workspace }}/chromium/src/cef/binary_distrib/*.tar.bz2 
