@@ -8,14 +8,6 @@ on:
         type: string
         required: true
         default: 'em-7151'
-      arch:
-        description: 'Architecture'
-        required: true
-        default: 'x86'
-        type: choice
-        options:
-        - x86
-        - x64
       clean:
         description: 'Force clean'
         type: boolean
@@ -37,18 +29,28 @@ jobs:
         shell: cmd
         run: curl -O https://raw.githubusercontent.com/emclient/cef/refs/heads/${{ inputs.branch }}/tools/automate/automate-git.py
 
-      - name: Build CEF
+      - name: Clear 
+
+      - name: Build CEF (win-x86)
         shell: cmd
         run: |
           set GN_DEFINES=is_official_build=true use_siso=false
           set GYP_MSVS_VERSION=2022
           set CEF_ARCHIVE_FORMAT=tar.bz2
-          python automate-git.py --download-dir=${{ github.workspace }} --url=https://github.com/emclient/cef.git --branch=${{ inputs.branch }} --minimal-distrib --client-distrib ${{ inputs.clean && '--force-clean' || '--force-build' }} ${{ inputs.arch == 'x64' && '--x64-build' || '' }} --with-pgo-profiles
+          python automate-git.py --download-dir=${{ github.workspace }} --url=https://github.com/emclient/cef.git --branch=${{ inputs.branch }} --minimal-distrib --client-distrib ${{ inputs.clean && '--force-clean' || '--force-build' }} --clean-artifacts --with-pgo-profiles
+
+      - name: Build CEF (win-x64)
+        shell: cmd
+        run: |
+          set GN_DEFINES=is_official_build=true use_siso=false
+          set GYP_MSVS_VERSION=2022
+          set CEF_ARCHIVE_FORMAT=tar.bz2
+          python automate-git.py --download-dir=${{ github.workspace }} --url=https://github.com/emclient/cef.git --branch=${{ inputs.branch }} --minimal-distrib --client-distrib ${{ inputs.clean && '--force-clean' || '--force-build' }} --x64-build --with-pgo-profiles
 
       - name: Get CEF version
         shell: bash
         run: |
-          CEF_VERSION=$(ls -d chromium/src/cef/binary_distrib/cef_binary_*_windows${{ inputs.arch == 'x64' && '64' || '32' }} | sed -n "s/.*cef_binary_\(.*\)_windows.*/\1/p")
+          CEF_VERSION=$(ls -d chromium/src/cef/binary_distrib/cef_binary_*_windows32 | sed -n "s/.*cef_binary_\(.*\)_windows.*/\1/p")
           echo "CEF_VERSION=${CEF_VERSION}" >> $GITHUB_ENV
 
       - name: Create release
