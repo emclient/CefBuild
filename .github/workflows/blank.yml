@@ -16,6 +16,11 @@ on:
         options:
         - x86
         - x64
+      clean:
+        description: 'Force clean'
+        type: boolean
+        required: true
+        default: false      
 
 jobs:
   build:
@@ -32,10 +37,10 @@ jobs:
       - name: Build CEF
         shell: cmd
         run: |
-          set GN_DEFINES=is_official_build=true use_siso=false
+          set GN_DEFINES=is_official_build=true
           set GYP_MSVS_VERSION=2022
           set CEF_ARCHIVE_FORMAT=tar.bz2
-          python automate-git.py --download-dir=${{ github.workspace }}/cef --url=https://github.com/emclient/cef.git --branch=${{ inputs.branch }} --minimal-distrib --client-distrib --force-clean ${{ inputs.arch == 'x64' && '--x64-build' || '' }} --with-pgo-profiles
+          python automate-git.py --download-dir=${{ github.workspace }} --url=https://github.com/emclient/cef.git --branch=${{ inputs.branch }} --minimal-distrib --client-distrib ${{ inputs.clean && '--force-clean' || '--force-build' }} ${{ inputs.arch == 'x64' && '--x64-build' || '' }} --with-pgo-profiles
 
       - name: Upload binaries
         uses: actions/upload-artifact@v4
